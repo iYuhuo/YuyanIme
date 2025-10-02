@@ -1,0 +1,32 @@
+# Android Studio
+.idea/
+.gradle/
+local.properties
+*.iml
+.DS_Store
+build/
+captures/
+.externalNativeBuild
+.cxx
+
+# Backup files
+*.zip
+*.bak
+*.backup
+
+# Large binary files
+*.tar.bz2
+temp_gradle/
+
+# Gradle wrapper (keep gradle wrapper jar)
+!gradle-wrapper.jar
+
+# Build outputs
+*.apk
+*.ap_
+*.dex
+*.class
+
+# Log files
+*.log
+
