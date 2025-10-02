@@ -1,0 +1,13 @@
+﻿package com.yuyan.imemodule.prefs.behavior
+
+import com.yuyan.imemodule.view.preference.ManagedPreference
+
+enum class FullDisplayCenterMode {
+    MoveCursor,
+    None;
+
+    companion object : ManagedPreference.StringLikeCodec<FullDisplayCenterMode> {
+        override fun decode(raw: String): FullDisplayCenterMode =
+            FullDisplayCenterMode.valueOf(raw)
+    }
+}

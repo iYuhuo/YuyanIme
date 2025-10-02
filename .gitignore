@@ -1,0 +1,24 @@
+# Android Studio
+.idea/
+.gradle/
+local.properties
+*.iml
+.DS_Store
+build/
+captures/
+.externalNativeBuild
+.cxx
+/.kotlin
+
+# Gradle wrapper
+gradle/wrapper/gradle-wrapper.jar
+
+# Build outputs
+*.apk
+*.ap_
+*.dex
+*.class
+
+# Log files
+*.log
+crash.log
