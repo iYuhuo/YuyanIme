@@ -1,0 +1,61 @@
+# Android Studio
+*.iml
+.idea/
+.gradle/
+build/
+captures/
+.externalNativeBuild
+
+# Android build outputs
+*.apk
+*.aab
+*.aar
+app/build/
+yuyansdk/build/
+**/build/
+**/outputs/
+**/intermediates/
+**/generated/
+
+# Gradle
+gradlew
+gradlew.bat
+gradle/wrapper/
+local.properties
+
+# Keystore files
+*.jks
+*.keystore
+keystore/keystore.properties
+
+# Log files
+*.log
+logcat.txt
+
+# Temporary files
+*.tmp
+*.temp
+*.zip.tmp
+新建文件夹*.zip.tmp
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE and development tools
+.vscode/
+.github/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Kotlin
+/.kotlin
+
+# Other
+*.zip
+*.rar
+*.7z

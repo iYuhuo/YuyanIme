@@ -1,0 +1,174 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp'
+    id 'kotlin-parcelize'
+    id 'kotlinx-serialization'
+}
+
+import java.util.TimeZone
+
+// ===== 工具函数 =====
+static def versionNameDate() {
+    return new Date().format("yyyyMMdd.HH", TimeZone.getTimeZone("GMT+8"))
+}
+
+static def getAppGitHead() {
+    try {
+        def result = "git rev-parse HEAD".execute()
+        result.waitFor()
+        if (result.exitValue() == 0) {
+            return result.text.trim()
+        } else {
+            return "unknown"
+        }
+    } catch (Exception e) {
+        return "unknown"
+    }
+}
+
+static def getAppBuildTime() {
+    try {
+        def result = "git log -1 --pretty=%ai".execute()
+        result.waitFor()
+        if (result.exitValue() == 0) {
+            return result.text.trim()
+        } else {
+            return new Date().format("yyyy-MM-dd HH:mm:ss")
+        }
+    } catch (Exception e) {
+        return new Date().format("yyyy-MM-dd HH:mm:ss")
+    }
+}
+
+// ===== Android 配置 =====
+android {
+    namespace 'com.yuyan.imemodule'
+    compileSdk 36
+
+    defaultConfig {
+        minSdk 23
+        targetSdk 36
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a', "x86", "x86_64"
+        }
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+        lintOptions {
+            abortOnError false
+        }
+
+        buildConfigField "String", "versionName", "\"${versionNameDate()}\""
+        buildConfigField "String", "AppCommitHead", "\"${getAppGitHead()}\""
+        buildConfigField "String", "AppBuildTime", "\"${getAppBuildTime()}\""
+    }
+
+    flavorDimensions = ["default"]
+    productFlavors {
+        online {
+            dimension "default"
+            buildConfigField "Boolean", "offline", "false"
+            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher")
+        }
+        offline {
+            dimension "default"
+            buildConfigField "Boolean", "offline", "true"
+            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
+            resValue("string", "app_name", "@string/ime_yuyan_name")
+        }
+        debug {
+            resValue("string", "app_name", "@string/ime_yuyan_name_debug")
+        }
+    }
+
+    sourceSets {
+        offline {
+            jniLibs.srcDirs = ['libs', "src/offline/libs"]
+            manifest.srcFile('src/offline/AndroidManifest.xml')
+        }
+        online {
+            jniLibs.srcDirs = ['libs', "src/online/libs"]
+            manifest.srcFile('src/online/AndroidManifest.xml')
+        }
+    }
+
+    // Java 配置
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // Kotlin 配置
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+// ===== Kotlin Toolchain 强制 JDK17 =====
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+// ===== 依赖 =====
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
+
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+
+    implementation 'androidx.emoji2:emoji2:1.5.0'
+    implementation 'androidx.emoji2:emoji2-views:1.5.0'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.21"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2"
+
+    implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.8.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.8.5'
+
+    implementation 'com.louiscad.splitties:splitties-resources:3.0.0'
+    implementation 'com.louiscad.splitties:splitties-views-dsl-recyclerview:3.0.0'
+    implementation 'com.louiscad.splitties:splitties-views-dsl-constraintlayout:3.0.0'
+    implementation 'com.louiscad.splitties:splitties-views-dsl-appcompat:3.0.0'
+
+    implementation 'androidx.exifinterface:exifinterface:1.3.7'
+
+    implementation "androidx.room:room-runtime:2.6.1"
+    ksp "androidx.room:room-compiler:2.6.1"
+    implementation "androidx.room:room-ktx:2.6.1"
+
+    // WebDAV
+    implementation 'com.thegrizzlylabs.sardine-android:sardine-android:0.8'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+}
+
+// ===== 自定义任务：输出 aar =====
+tasks.register('makeaar', Copy) {
+    from('build/outputs/aar/')
+    into('build/outputs/aar/')
+    include('imeModule-dev-debug.aar')
+    rename('imeModule-dev-debug.aar', 'imesdk_' + versionNameDate() + '.aar')
+}
+makeaar.dependsOn(build)
