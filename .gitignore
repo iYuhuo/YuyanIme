@@ -1,32 +1,33 @@
-# Android Studio
-.idea/
+*.iml
 .gradle/
 local.properties
-*.iml
 .DS_Store
 build/
 captures/
 .externalNativeBuild
-.cxx
-
-# Backup files
-*.zip
-*.bak
-*.backup
-
-# Large binary files
-*.tar.bz2
-temp_gradle/
-
-# Gradle wrapper (keep gradle wrapper jar)
-!gradle-wrapper.jar
-
-# Build outputs
-*.apk
-*.ap_
-*.dex
-*.class
-
-# Log files
+.idea/
+gradlew
+gradlew.bat
+gradle/wrapper/
+*.jks
+keystore/keystore.properties
+/.kotlin
 *.log
 
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# IDE
+.vscode/
+
+# Logs
+logcat.txt
+
+# APK outputs
+*.apk
+
+# Keystore
+keystore/*.jks

@@ -1,0 +1,52 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/public' }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:2.0.21"
+        classpath "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.0.21-1.0.25"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.8.5"
+    }
+}
+
+allprojects {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    }
+}
+
+tasks.register('clean', Delete) {
+    delete rootProject.buildDir
+}
+
+// ===== 全局 Kotlin JVM 17 设置 =====
+subprojects {
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin('org.jetbrains.kotlin.jvm') ||
+                project.plugins.hasPlugin('org.jetbrains.kotlin.android')) {
+
+            project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+                kotlinOptions {
+                    jvmTarget = "17"
+                }
+            }
+
+            project.kotlin {
+                jvmToolchain {
+                    languageVersion.set(JavaLanguageVersion.of(17))
+                }
+            }
+        }
+    }
+}
